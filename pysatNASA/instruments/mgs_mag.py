@@ -100,7 +100,6 @@ list_remote_files = functools.partial(cdw.cdas_list_remote_files,
 
 
 def load(fnames, tag=None, inst_id=None):
-
     """Load MGS MAG data into `pandas.DataFrame` and `pysat.Meta` objects.
 
     This routine is called as needed by pysat. It is not intended
