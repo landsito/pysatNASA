@@ -73,3 +73,6 @@ custom_lint.sh
 
 # vscode
 .vscode
+
+# pyenv
+.python-version
