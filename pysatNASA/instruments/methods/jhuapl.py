@@ -1,4 +1,12 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Full license can be found in License.md
+# Full author list can be found in .zenodo.json file
+# DOI:10.5281/zenodo.3986131
+#
+# DISTRIBUTION STATEMENT A: Approved for public release. Distribution is
+# unlimited.
+# ----------------------------------------------------------------------------
 """Module for data sets created by JHU APL."""
 
 import datetime as dt
@@ -38,7 +46,8 @@ def build_dtimes(data, var, epoch=None, epoch_var='time'):
     skey = 'TIME{:s}'.format(var)
 
     if epoch is None:
-        hours = [int(np.floor(sec / 3600.0)) for sec in data[skey].values]
+        hours = np.array([int(np.floor(sec / 3600.0))
+                          for sec in data[skey].values])
         mins = [int(np.floor((sec - hours[i] * 3600) / 60.0))
                 for i, sec in enumerate(data[skey].values)]
         secs = [int(np.floor((sec - hours[i] * 3600 - mins[i] * 60)))
@@ -46,11 +55,18 @@ def build_dtimes(data, var, epoch=None, epoch_var='time'):
         microsecs = [int(np.floor((sec - hours[i] * 3600 - mins[i] * 60
                                    - secs[i]) * 1.0e6))
                      for i, sec in enumerate(data[skey].values)]
+        days = np.array([int(dval) for dval in data[dkey].values])
+
+        # Ensure hours are within a realistic range. Datetime can handle day of
+        # roll-over for non-leap years.
+        days[hours >= 24] += 1
+        hours[hours >= 24] -= 24
+
         dtimes = [
             dt.datetime.strptime(
                 "{:4d}-{:03d}-{:02d}-{:02d}-{:02d}-{:06d}".format(
-                    int(data[ykey].values[i]), int(data[dkey].values[i]),
-                    hours[i], mins[i], secs[i], microsec), '%Y-%j-%H-%M-%S-%f')
+                    int(data[ykey].values[i]), days[i], hours[i], mins[i],
+                    secs[i], microsec), '%Y-%j-%H-%M-%S-%f')
             for i, microsec in enumerate(microsecs)]
     else:
         dtimes = [
@@ -266,15 +282,15 @@ def load_sdr_aurora(fnames, name='', tag='', inst_id='', pandas_format=False,
 
         # Ensure identical day and night dimensions for GUVI
         if name == 'guvi':
-            if sdata.dims['nAlongDay'] != sdata.dims['nAlongNight']:
+            if sdata.sizes['nAlongDay'] != sdata.sizes['nAlongNight']:
                 raise ValueError('Along-track day and night dimensions differ')
 
             if 'nCrossDay' in rename_dims.keys():
-                if sdata.dims['nCrossDay'] != sdata.dims['nCrossNight']:
+                if sdata.sizes['nCrossDay'] != sdata.sizes['nCrossNight']:
                     raise ValueError(''.join([
                         'Cross-track day and night dimensions differ ',
-                        '{:} != {:}'.format(sdata.dims['nCrossDay'],
-                                            sdata.dims['nCrossNight'])]))
+                        '{:} != {:}'.format(sdata.sizes['nCrossDay'],
+                                            sdata.sizes['nCrossNight'])]))
 
         # Combine identical dimensions and rename some time dimensions
         sdata = sdata.rename_dims(rename_dims)
@@ -443,4 +459,77 @@ def clean_by_dqi(inst):
                     # Try again with NaN, a bad fill value was set
                     inst.data[dat_var].values[dqi_bad] = np.nan
                     inst.meta[dat_var] = {inst.meta.labels.fill_val: np.nan}
+    return
+
+
+def concat_data(inst, time_dims, new_data, combine_times=False, **kwargs):
+    """Concatonate data to inst.data for JHU APL SDR data.
+
+    Parameters
+    ----------
+    inst : pysat.Instrument
+        Object containing a JHU APL Instrument with data
+    time_dims : list
+        List of the time dimensions
+    new_data : xarray.Dataset or list of such objects
+        New data objects to be concatonated
+    combine_times : bool
+        For SDR data, optionally combine the different datetime coordinates
+        into a single time coordinate (default=False)
+    **kwargs : dict
+        Optional keyword arguments passed to xr.concat
+
+    Note
+    ----
+    For xarray, `dim=Instrument.index.name` is passed along to xarray.concat
+    except if the user includes a value for dim as a keyword argument.
+
+    """
+    # Concatonate using the appropriate method for the number of time
+    # dimensions
+    if len(time_dims) == 1:
+        # There is only one time dimensions, but other dimensions may
+        # need to be adjusted
+        new_data = pysat.utils.coords.expand_xarray_dims(
+            new_data, inst.meta, exclude_dims=time_dims)
+
+        # Combine the data
+        inst.data = xr.combine_by_coords(new_data, **kwargs)
+    else:
+        inners = None
+        for ndata in new_data:
+            # Separate into inner datasets
+            inner_keys = {dim: [key for key in ndata.keys()
+                                if dim in ndata[key].dims] for dim in time_dims}
+            inner_dat = {dim: ndata.get(inner_keys[dim]) for dim in time_dims}
+
+            # Add 'single_var's into 'time' dataset to keep track
+            sv_keys = [val.name for val in ndata.values()
+                       if 'single_var' in val.dims]
+            singlevar_set = ndata.get(sv_keys)
+            inner_dat[inst.index.name] = xr.merge([inner_dat[inst.index.name],
+                                                   singlevar_set])
+
+            # Concatenate along desired dimension with previous data
+            if inners is None:
+                # No previous data, assign the data separated by dimension
+                inners = dict(inner_dat)
+            else:
+                # Concatenate with existing data
+                inners = {dim: xr.concat([inners[dim], inner_dat[dim]],
+                                         dim=dim) for dim in time_dims}
+
+        # Combine all time dimensions
+        if inners is not None:
+            if combine_times:
+                data_list = pysat.utils.coords.expand_xarray_dims(
+                    [inners[dim] if dim == inst.index.name else
+                     inners[dim].rename_dims({dim: inst.index.name})
+                     for dim in time_dims if len(inners[dim].dims) > 0],
+                    inst.meta, dims_equal=False)
+            else:
+                data_list = [inners[dim] for dim in time_dims]
+
+            # Combine all the data, indexing along time
+            inst.data = xr.merge(data_list)
     return

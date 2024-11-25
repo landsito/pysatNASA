@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Full license can be found in License.md
+# Full author list can be found in .zenodo.json file
+# DOI:10.5281/zenodo.3986131
+#
+# DISTRIBUTION STATEMENT A: Approved for public release. Distribution is
+# unlimited.
+# ----------------------------------------------------------------------------
 """Module for the DE2 VEFI instrument.
 
 .. deprecated:: 0.0.6
@@ -34,12 +43,14 @@ name
 tag
     '', 'dca', 'ac'
 inst_id
-    none supported
+    None supported
 
 
 Warnings
 --------
 - Currently no cleaning routine.
+- The deprecated '' tag will drop the E-field data. To use this data
+  product, please use the new de2_vefimagb instrument.
 
 
 """
@@ -124,7 +135,9 @@ def load(fnames, tag='', inst_id='', **kwargs):
     inst_id : str
         Instrument ID used to identify particular data set to be loaded.
         This input is nominally provided by pysat itself. (default='')
-
+    **kwargs : unpacked dict
+        Optional kwargs that will be passed to the
+        `pysatNASA.instruments.methods.cdaweb.load_xarray` function
     Returns
     -------
     data : pds.DataFrame
@@ -137,12 +150,16 @@ def load(fnames, tag='', inst_id='', **kwargs):
     Several variables relating to time stored in different formats are dropped.
     These are redundant and complicate the load procedure.
 
+    See Also
+    --------
+    pysatNASA.instruments.methods.cdaweb.load_xarray
+
     """
 
     if tag == '':
         # Warn user that e-field data is dropped.
         estr = 'E-field data dropped'
-        pysat.logger.warn(estr)
+        pysat.logger.warning(estr)
 
         # Drop E-field data
         if 'use_cdflib' in kwargs.keys():

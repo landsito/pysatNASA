@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Full license can be found in License.md
+# Full author list can be found in .zenodo.json file
+# DOI:10.5281/zenodo.3986131
+#
+# DISTRIBUTION STATEMENT A: Approved for public release. Distribution is
+# unlimited.
+# ----------------------------------------------------------------------------
 """Module for the DE2 VEFI instrument.
 
 From CDAWeb (adpated):
@@ -102,7 +111,7 @@ list_files = functools.partial(mm_gen.list_files,
 
 # Set the load routine
 def load(fnames, tag='', inst_id='', **kwargs):
-    """Load DE2 VEFI data.
+    """Load DE2 VEFI MAG B-field data.
 
     This routine is called as needed by pysat. It is not intended
     for direct user interaction.

@@ -1,4 +1,12 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Full license can be found in License.md
+# Full author list can be found in .zenodo.json file
+# DOI:10.5281/zenodo.3986131
+#
+# DISTRIBUTION STATEMENT A: Approved for public release. Distribution is
+# unlimited.
+# ----------------------------------------------------------------------------
 """Module for the ICON FUV instrument.
 
 Supports the Far Ultraviolet (FUV) imager onboard the Ionospheric
@@ -67,9 +75,6 @@ pandas_format = False
 
 _test_dates = {'': {kk: dt.datetime(2020, 1, 1) for kk in tags.keys()}}
 _test_load_opt = {'': {kk: {'keep_original_names': True} for kk in tags.keys()}}
-_clean_warn = {inst_id: {tag: mm_icon.fuv_clean_warnings
-                         for tag in inst_ids[inst_id]}
-               for inst_id in inst_ids.keys()}
 # TODO(#218, #222): Remove when compliant with multi-day load tests
 _new_tests = {inst_id: {tag: False for tag in tags.keys()}
               for inst_id in inst_ids.keys()}
