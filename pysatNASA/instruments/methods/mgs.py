@@ -1,10 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Provides non-instrument specific routines for MGS data.
-
-Created on Wed Feb  7 11:42:10 2024
-
-@author: tesman
-"""
+#
+# TODO(#XXX): Update NRL review before next version release
+# ---------------------------------------------------------
+"""Provides non-instrument specific routines for MGS data."""
 
 ackn_str = ' '.join(('Much of the information provided in this meta data ',
                      'originates from text files provided at: ',

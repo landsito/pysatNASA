@@ -1,4 +1,8 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#
+# TODO(#XXX): Update NRL review before next version release
+# ---------------------------------------------------------
 """Module for the MGS mag instrument.
 
 Supports the Magnetometer (MAG) onboard the Mars Global
@@ -13,9 +17,9 @@ platform
 name
     'mag'
 tag
-    'low','high'
-inst_id
     None supported
+inst_id
+    ['low', 'high']
 
 Warnings
 --------
@@ -29,9 +33,9 @@ Examples
 
     import pysat
 
-    mag = pysat.Instrument('mgs', 'mag')
+    mag = pysat.Instrument('mgs', 'mag', inst_id='low')
     mag.download(dt.datetime(1998, 1, 1), dt.datetime(1998, 1, 31))
-    mag.load(1998, 1, use_header = True)
+    mag.load(1998, 9)
 
 """
 
@@ -42,7 +46,7 @@ from pysat.instruments.methods import general as mm_gen
 from pysat.utils.io import load_netcdf
 from pysatNASA.instruments.methods import cdaweb as cdw
 from pysatNASA.instruments.methods import general as mm_nasa
-from ops_mgs.instruments.methods import mgs as mm_mgs
+from pysatNASA.instruments.methods import mgs as mm_mgs
 
 # ----------------------------------------------------------------------------
 # Instrument attributes
@@ -57,7 +61,7 @@ pandas_format = True
 # ----------------------------------------------------------------------------
 # Instrument test attributes
 
-_test_dates = {'': {'': dt.datetime(1998, 1, 1)}}
+_test_dates = {iid: {'': dt.datetime(1998, 1, 9)} for iid in inst_ids.keys()}
 
 # ----------------------------------------------------------------------------
 # Instrument methods
@@ -84,20 +88,12 @@ supported_tags = {'high': {'': fname1},
 list_files = functools.partial(mm_gen.list_files,
                                supported_tags=supported_tags)
 # Set the download routine
-basic_tag_high = {'remote_dir': ''.join(('/pub/data/aaa_planetary/',
-                                         'mgs_mars_global_survey/mag',
-                                         '/high/{year:04d}')),
-                  'fname': fname1}
-basic_tag_low = {'remote_dir': ''.join(('/pub/data/aaa_planetary/',
-                                        'mgs_mars_global_survey/mag',
-                                        '/low/{year:04d}')),
-                 'fname': fname2}
-download_tags = {'high': {'': basic_tag_high},
-                 'low': {'': basic_tag_low}}
-download = functools.partial(cdw.download, supported_tags=download_tags)
+download_tags = {'low': {'': 'MGS_MAG_LOW'},
+                 'high': {'': 'MGS_MAG_HIGH'}}
+download = functools.partial(cdw.cdas_download, supported_tags=download_tags)
 
 # Set the list_remote_files routine
-list_remote_files = functools.partial(cdw.list_remote_files,
+list_remote_files = functools.partial(cdw.cdas_list_remote_files,
                                       supported_tags=download_tags)
 
 # Set the load routine
@@ -150,5 +146,6 @@ def load(fnames, tag=None, inst_id=None):
               'max_val': ('VALIDMAX', (int, float)),
               'fill_val': ('_FillValue', (int, float))}
     data, meta = load_netcdf(fnames, epoch_name='unix_time',
+                             epoch_unit='s',
                              meta_kwargs={'labels': labels})
     return data, meta
