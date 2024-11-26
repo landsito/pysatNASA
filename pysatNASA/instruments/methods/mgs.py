@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# TODO(#XXX): Update NRL review before next version release
 # ---------------------------------------------------------
 """Provides non-instrument specific routines for MGS data."""
 

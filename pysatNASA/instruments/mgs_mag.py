@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# TODO(#XXX): Update NRL review before next version release
 # ---------------------------------------------------------
 """Module for the MGS mag instrument.
 
@@ -99,7 +98,7 @@ list_remote_files = functools.partial(cdw.cdas_list_remote_files,
 # Set the load routine
 
 
-def load(fnames, tag=None, inst_id=None):
+def load(fnames, tag='', inst_id=''):
     """Load MGS MAG data into `pandas.DataFrame` and `pysat.Meta` objects.
 
     This routine is called as needed by pysat. It is not intended
@@ -114,7 +113,7 @@ def load(fnames, tag=None, inst_id=None):
         tag name used to identify particular data set to be loaded.
         This input is nominally provided by pysat itself.
     inst_id : str
-        Satellite ID used to identify particular data set to be loaded.
+        Instrument ID used to identify particular data set to be loaded.
         This input is nominally provided by pysat itself.
 
     Returns
