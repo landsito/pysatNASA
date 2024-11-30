@@ -212,6 +212,14 @@ MAVEN SEP
 .. automodule:: pysatNASA.instruments.maven_sep
    :members:
 
+.. _mgs_mag:
+
+MGS MAG
+-------
+
+.. automodules:: pysatNASA.instruments.mgs_mag
+   :members:
+
 .. _omni_hro:
 
 OMNI HRO
