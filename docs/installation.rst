@@ -59,14 +59,18 @@ Installation Options
 
         pip install --user -e .
 
-.. extras-require:: pysatcdf
-    :pyproject:
 
-.. extras-require:: test
-    :pyproject:
+..
+    .. extras-require:: pysatcdf
+        :pyproject:
 
-.. extras-require:: doc
-    :pyproject:
+..
+    .. extras-require:: test
+        :pyproject:
+
+..
+    .. extras-require:: doc
+        :pyproject:
 
 .. _post-install:
 
