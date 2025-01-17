@@ -2,9 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.0.7] - 2025-01-16
+## [0.1.0] - 2025-XX-XX
 * New Instruments
+  * Mars Global Surveyor Magnetometer (MGS Mag)
   * TIMED TIDI
+* Documentation
+  * Updated controlled information review statement for clarity
 
 ## [0.0.6] - 2024-10-03
 * New Instruments

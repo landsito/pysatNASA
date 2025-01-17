@@ -4,6 +4,8 @@
 # Full author list can be found in .zenodo.json file
 # DOI:10.5281/zenodo.3986131
 #
+# Review Status for Classified or Controlled Information by NRL
+# -------------------------------------------------------------
 # DISTRIBUTION STATEMENT A: Approved for public release. Distribution is
 # unlimited.
 # ----------------------------------------------------------------------------
@@ -24,3 +26,4 @@ from pysatNASA.instruments.methods import omni  # noqa F401
 from pysatNASA.instruments.methods import reach  # noqa F401
 from pysatNASA.instruments.methods import ses14  # noqa F401
 from pysatNASA.instruments.methods import timed  # noqa F401
+from pysatNASA.instruments.methods import mgs  # noqa F401
