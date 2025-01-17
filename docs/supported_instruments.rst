@@ -259,3 +259,11 @@ TIMED SEE
 
 .. automodule:: pysatNASA.instruments.timed_see
    :members:
+
+.. _timed_tidi:
+
+TIMED TIDI
+---------
+
+.. automodule:: pysatNASA.instruments.timed_tidi
+   :members:
