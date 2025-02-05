@@ -77,7 +77,9 @@ def init(self, module=mm_timed, name=name):
     
     # Same timing cold/warm for Michigan files.
     self.strict_time_flag = False
-
+    # Set multi_file_day flag as needed
+    if self.tag == 'vector':
+        self.multi_file_day = True
 # No cleaning, use standard warning function instead
 clean = mm_nasa.clean_warn
 
